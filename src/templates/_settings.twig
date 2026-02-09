@@ -1,0 +1,65 @@
+{# @var plugin \wabisoft\craftissuereporter\IssueReporter #}
+{# @var settings \wabisoft\craftissuereporter\models\Settings #}
+
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.textField({
+    label: 'IssueRelay Host URL',
+    instructions: 'URL of your IssueRelay instance. Supports `$ENV_VAR` syntax.',
+    name: 'hostUrl',
+    value: settings.hostUrl,
+    placeholder: 'https://issuerelay.com',
+    required: true,
+    errors: settings.getErrors('hostUrl'),
+}) }}
+
+{{ forms.textField({
+    label: 'Project UUID',
+    instructions: 'From the IssueRelay dashboard. Supports `$ENV_VAR` syntax.',
+    name: 'projectUuid',
+    value: settings.projectUuid,
+    required: true,
+    errors: settings.getErrors('projectUuid'),
+}) }}
+
+{{ forms.textField({
+    label: 'API Key',
+    instructions: 'Public API key — for your reference only. Not used by the plugin.',
+    name: 'apiKey',
+    value: settings.apiKey,
+    errors: settings.getErrors('apiKey'),
+}) }}
+
+{{ forms.passwordField({
+    label: 'API Secret',
+    instructions: 'HMAC signing secret. Never shared publicly. Supports `$ENV_VAR` syntax.',
+    name: 'apiSecret',
+    value: settings.apiSecret,
+    required: true,
+    errors: settings.getErrors('apiSecret'),
+}) }}
+
+{{ forms.textField({
+    label: 'Token TTL (seconds)',
+    instructions: 'How long tokens remain valid. Min 300, max 86400. Default: 3600.',
+    name: 'tokenTtl',
+    value: settings.tokenTtl,
+    type: 'number',
+    errors: settings.getErrors('tokenTtl'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Auto-inject Widget',
+    instructions: 'Automatically add the widget to all front-end pages for logged-in users.',
+    name: 'autoInject',
+    on: settings.autoInject,
+}) }}
+
+{% set userGroupOptions = craft.app.userGroups.getAllGroups() | map(g => { label: g.name, value: g.uid }) %}
+{{ forms.checkboxSelectField({
+    label: 'Allowed User Groups',
+    instructions: 'Leave empty to allow all logged-in CP users.',
+    name: 'allowedUserGroups',
+    values: settings.allowedUserGroups,
+    options: userGroupOptions,
+}) }}
