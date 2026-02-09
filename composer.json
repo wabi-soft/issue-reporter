@@ -1,49 +1,50 @@
 {
-  "name": "wabisoft/craft-issue-reporter",
-  "description": "Report issues to Relay",
-  "type": "craft-plugin",
-  "license": "proprietary",
-  "support": {
-    "email": "hello@wabisoft.com"
-  },
-  "require": {
-    "php": ">=8.2",
-    "craftcms/cms": "^5.9.0"
-  },
-  "require-dev": {
-    "craftcms/ecs": "dev-main",
-    "craftcms/phpstan": "dev-main",
-    "marcocesarato/php-conventional-changelog": "^1.17"
-  },
-  "autoload": {
-    "psr-4": {
-      "wabisoft\\craftissuereporter\\": "src/"
-    }
-  },
-  "extra": {
-    "handle": "issue-reporter",
-    "name": "Issue Reporter",
-    "developer": "wabisoft",
-    "documentationUrl": "",
-    "class": "wabisoft\\craftissuereporter\\IssueReporter"
-  },
-  "scripts": {
-    "check-cs": "ecs check --ansi",
-    "fix-cs": "ecs check --ansi --fix",
-    "phpstan": "phpstan --memory-limit=1G",
-    "release": "php vendor/bin/conventional-changelog --commit",
-    "release:patch": "php vendor/bin/conventional-changelog --patch --commit",
-    "release:minor": "php vendor/bin/conventional-changelog --minor --commit",
-    "release:major": "php vendor/bin/conventional-changelog --major --commit"
-  },
-  "config": {
-    "sort-packages": true,
-    "platform": {
-      "php": "8.2"
+    "name": "wabisoft/craft-issue-reporter",
+    "description": "Report issues to Relay",
+    "type": "craft-plugin",
+    "license": "proprietary",
+    "support": {
+        "email": "hello@wabisoft.com"
     },
-    "allow-plugins": {
-      "yiisoft/yii2-composer": true,
-      "craftcms/plugin-installer": true
-    }
-  }
+    "require": {
+        "php": ">=8.2",
+        "craftcms/cms": "^5.9.0"
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main",
+        "marcocesarato/php-conventional-changelog": "^1.17"
+    },
+    "autoload": {
+        "psr-4": {
+            "wabisoft\\craftissuereporter\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "issue-reporter",
+        "name": "Issue Reporter",
+        "developer": "wabisoft",
+        "documentationUrl": "",
+        "class": "wabisoft\\craftissuereporter\\IssueReporter"
+    },
+    "scripts": {
+        "check-cs": "ecs check --ansi",
+        "fix-cs": "ecs check --ansi --fix",
+        "phpstan": "phpstan --memory-limit=1G",
+        "release": "php vendor/bin/conventional-changelog --commit",
+        "release:patch": "php vendor/bin/conventional-changelog --patch --commit",
+        "release:minor": "php vendor/bin/conventional-changelog --minor --commit",
+        "release:major": "php vendor/bin/conventional-changelog --major --commit"
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.2"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    },
+    "version": "0.0.1"
 }
