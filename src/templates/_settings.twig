@@ -3,9 +3,11 @@
 
 {% import '_includes/forms.twig' as forms %}
 
+<h2>IssueRelay Credentials</h2>
+<p class="light">Copy these from your <a href="https://issuerelay.com" target="_blank">IssueRelay</a> project settings.</p>
+
 {{ forms.textField({
-    label: 'IssueRelay Host URL',
-    instructions: 'URL of your IssueRelay instance. Supports `$ENV_VAR` syntax.',
+    label: 'Host URL',
     name: 'hostUrl',
     value: settings.hostUrl,
     placeholder: 'https://issuerelay.com',
@@ -15,7 +17,6 @@
 
 {{ forms.textField({
     label: 'Project UUID',
-    instructions: 'From the IssueRelay dashboard. Supports `$ENV_VAR` syntax.',
     name: 'projectUuid',
     value: settings.projectUuid,
     required: true,
@@ -24,7 +25,7 @@
 
 {{ forms.textField({
     label: 'API Key',
-    instructions: 'Public API key — for your reference only. Not used by the plugin.',
+    instructions: 'For your reference only — not used by the plugin.',
     name: 'apiKey',
     value: settings.apiKey,
     errors: settings.getErrors('apiKey'),
@@ -32,34 +33,41 @@
 
 {{ forms.passwordField({
     label: 'API Secret',
-    instructions: 'HMAC signing secret. Never shared publicly. Supports `$ENV_VAR` syntax.',
+    instructions: 'Used to sign widget tokens. For production, use `$ENV_VAR` syntax.',
     name: 'apiSecret',
     value: settings.apiSecret,
     required: true,
     errors: settings.getErrors('apiSecret'),
 }) }}
 
-{{ forms.textField({
-    label: 'Token TTL (seconds)',
-    instructions: 'How long tokens remain valid. Min 300, max 86400. Default: 3600.',
-    name: 'tokenTtl',
-    value: settings.tokenTtl,
-    type: 'number',
-    errors: settings.getErrors('tokenTtl'),
-}) }}
+<hr>
+
+<h2>Widget Settings</h2>
 
 {{ forms.lightswitchField({
     label: 'Auto-inject Widget',
-    instructions: 'Automatically add the widget to all front-end pages for logged-in users.',
+    instructions: 'Automatically add the widget to all front-end pages for logged-in CP users. When off, use `{{ issueRelayWidget() }}` in your templates.',
     name: 'autoInject',
     on: settings.autoInject,
 }) }}
 
-{% set userGroupOptions = craft.app.userGroups.getAllGroups() | map(g => { label: g.name, value: g.uid }) %}
-{{ forms.checkboxSelectField({
-    label: 'Allowed User Groups',
-    instructions: 'Leave empty to allow all logged-in CP users.',
-    name: 'allowedUserGroups',
-    values: settings.allowedUserGroups,
-    options: userGroupOptions,
+{{ forms.textField({
+    label: 'Token TTL (seconds)',
+    instructions: 'How long widget tokens remain valid. Default: 3600 (1 hour).',
+    name: 'tokenTtl',
+    value: settings.tokenTtl,
+    type: 'number',
+    size: 10,
+    errors: settings.getErrors('tokenTtl'),
 }) }}
+
+{% set userGroupOptions = craft.app.userGroups.getAllGroups() | map(g => { label: g.name, value: g.uid }) %}
+{% if userGroupOptions | length %}
+    {{ forms.checkboxSelectField({
+        label: 'Allowed User Groups',
+        instructions: 'Leave empty to allow all logged-in CP users.',
+        name: 'allowedUserGroups',
+        values: settings.allowedUserGroups,
+        options: userGroupOptions,
+    }) }}
+{% endif %}
