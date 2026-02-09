@@ -78,8 +78,10 @@ class Extension extends AbstractExtension
             return '';
         }
 
+        $cacheBust = App::devMode() ? time() : date('Ymd');
+
         return <<<HTML
-        <script src="{$hostUrl}/widget/widget.js" defer></script>
+        <script src="{$hostUrl}/widget/widget.js?v={$cacheBust}" defer></script>
         <script>
           (function() {
             function initWidget() {
