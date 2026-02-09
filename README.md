@@ -1,30 +1,29 @@
 # Issue Reporter
 
-Report issues to Relay
+Craft CMS plugin that injects the [IssueRelay](https://issuerelay.com) feedback widget for logged-in CP users.
+
+## Setup
+
+1. Install the plugin
+2. Go to **Settings > Issue Reporter** in the CP
+3. Paste your Host URL, Project UUID, API Key, and API Secret from the IssueRelay dashboard
+4. Save
+
+The widget automatically appears on all front-end pages for users with CP access. No template changes needed.
+
+## Environment Variables
+
+For production, use env var syntax for credentials:
+
+```
+ISSUE_REPORTER_HOST_URL=https://issuerelay.com
+ISSUE_REPORTER_PROJECT_UUID=your-uuid
+ISSUE_REPORTER_API_SECRET=your-secret
+```
+
+Then in plugin settings, enter `$ISSUE_REPORTER_API_SECRET`, etc.
 
 ## Requirements
 
-This plugin requires Craft CMS 5.9.0 or later, and PHP 8.2 or later.
-
-## Installation
-
-You can install this plugin from the Plugin Store or with Composer.
-
-#### From the Plugin Store
-
-Go to the Plugin Store in your project’s Control Panel and search for “Issue Reporter”. Then press “Install”.
-
-#### With Composer
-
-Open your terminal and run the following commands:
-
-```bash
-# go to the project directory
-cd /path/to/my-project.test
-
-# tell Composer to load the plugin
-composer require wabisoft/craft-issue-reporter
-
-# tell Craft to install the plugin
-./craft plugin/install issue-reporter
-```
+- Craft CMS 5.9+
+- PHP 8.2+
