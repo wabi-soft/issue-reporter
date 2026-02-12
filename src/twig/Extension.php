@@ -87,6 +87,15 @@ class Extension extends AbstractExtension
                 $initConfig['serverLogs'] = $logs;
             }
         }
+
+        $theme = array_filter([
+            'primary' => $settings->primaryColor,
+            'primaryHover' => $settings->primaryHoverColor,
+        ]);
+        if (!empty($theme)) {
+            $initConfig['theme'] = $theme;
+        }
+
         $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES);
 
         return <<<HTML

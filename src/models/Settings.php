@@ -16,6 +16,8 @@ class Settings extends Model
     public int $maxLogFiles = 5;
     public int $maxLogFileSize = 32;
     public int $maxTotalLogSize = 10000;
+    public ?string $primaryColor = null;
+    public ?string $primaryHoverColor = null;
 
     protected function defineRules(): array
     {
@@ -27,6 +29,7 @@ class Settings extends Model
             ['maxLogFiles', 'integer', 'min' => 1, 'max' => 10],
             ['maxLogFileSize', 'integer', 'min' => 8, 'max' => 64],
             ['maxTotalLogSize', 'integer', 'min' => 2000, 'max' => 50000],
+            [['primaryColor', 'primaryHoverColor'], 'match', 'pattern' => '/^#[0-9a-fA-F]{6}$/', 'message' => 'Must be a valid hex color (e.g. #1D4ED8).'],
             ['logFiles', function ($attribute) {
                 foreach ($this->$attribute as $row) {
                     if (!isset($row['pattern']) || !preg_match('/^[a-zA-Z0-9.*_-]+$/', $row['pattern'])) {

@@ -65,6 +65,24 @@
 {% endif %}
 
 <hr>
+<h2>Widget Theme</h2>
+<p class="light">Optional. Overrides the project theme set in the IssueRelay dashboard.</p>
+
+{{ forms.colorField({
+    label: 'Primary Color',
+    name: 'primaryColor',
+    value: settings.primaryColor,
+    errors: settings.getErrors('primaryColor'),
+}) }}
+
+{{ forms.colorField({
+    label: 'Primary Hover Color',
+    name: 'primaryHoverColor',
+    value: settings.primaryHoverColor,
+    errors: settings.getErrors('primaryHoverColor'),
+}) }}
+
+<hr>
 <h2>Log Settings</h2>
 
 {{ forms.editableTableField({
