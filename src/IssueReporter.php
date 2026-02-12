@@ -8,6 +8,7 @@ use craft\base\Plugin;
 use craft\events\TemplateEvent;
 use craft\web\View;
 use wabisoft\craftissuereporter\models\Settings;
+use wabisoft\craftissuereporter\services\LogCollector;
 use wabisoft\craftissuereporter\services\TokenService;
 use wabisoft\craftissuereporter\twig\Extension;
 use yii\base\Event;
@@ -15,6 +16,7 @@ use yii\base\Event;
 /**
  * @method static IssueReporter getInstance()
  * @method Settings getSettings()
+ * @property-read LogCollector $logCollector
  * @property-read TokenService $tokenService
  */
 class IssueReporter extends Plugin
@@ -26,6 +28,7 @@ class IssueReporter extends Plugin
     {
         return [
             'components' => [
+                'logCollector' => LogCollector::class,
                 'tokenService' => TokenService::class,
             ],
         ];
