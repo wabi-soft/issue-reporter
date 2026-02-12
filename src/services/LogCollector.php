@@ -5,13 +5,12 @@ namespace wabisoft\craftissuereporter\services;
 use Craft;
 use craft\base\Component;
 use wabisoft\craftissuereporter\IssueReporter;
+use yii\base\Exception;
 
 class LogCollector extends Component
 {
-    private const MAX_FILES = 5;
-    private const MAX_READ_BYTES = 32768; // 32KB per file
-    private const MAX_TOTAL_CHARS = 10000;
-
+    // Double safety, Craft should have already redacted
+    // sensitive values before it gets here
     private const REDACTION_PATTERNS = [
         '/((?:api[_-]?key|token|secret|password|passwd|auth|session[_-]?id|csrf)\s*[=:]\s*)\S+/i',
         '/((?:api[_-]?key|token|secret|password|passwd|auth|session[_-]?id|csrf)"\s*:\s*")[^"]*(")/i',
@@ -32,6 +31,9 @@ class LogCollector extends Component
         '[REDACTED]',
     ];
 
+    /**
+     * @throws Exception
+     */
     public function collect(): array
     {
         $settings = IssueReporter::getInstance()->getSettings();
@@ -47,14 +49,14 @@ class LogCollector extends Component
         $cutoff = time() - 172800;
         $paths = array_filter($paths, fn($p) => filemtime($p) >= $cutoff);
         usort($paths, fn($a, $b) => filemtime($b) - filemtime($a));
-        $paths = array_slice($paths, 0, self::MAX_FILES);
+        $paths = array_slice($paths, 0, $settings->maxLogFiles);
 
-        $perFileCap = (int) floor(self::MAX_TOTAL_CHARS / count($paths));
+        $perFileCap = (int) floor($settings->maxTotalLogSize / count($paths));
         $results = [];
 
         foreach ($paths as $path) {
             try {
-                $content = $this->readTail($path);
+                $content = $this->readTail($path, $settings->maxLogFileSize * 1024);
                 $content = $this->filterSeverity($content);
                 $content = $this->redact($content);
                 $content = $this->truncate($content, $perFileCap);
@@ -70,9 +72,9 @@ class LogCollector extends Component
         return $results;
     }
 
-    private function resolveLogPaths(string $logFiles, string $logPath): array
+    private function resolveLogPaths(array $logFiles, string $logPath): array
     {
-        $entries = array_filter(array_map('trim', explode(',', $logFiles)));
+        $entries = array_filter(array_column($logFiles, 'pattern'));
 
         if (empty($entries)) {
             return [];
@@ -138,14 +140,14 @@ class LogCollector extends Component
         return implode("\n", $filtered);
     }
 
-    private function readTail(string $path): string
+    private function readTail(string $path, int $maxReadBytes): string
     {
         $size = filesize($path);
         if ($size === false || $size === 0) {
             return '';
         }
 
-        $offset = max(0, $size - self::MAX_READ_BYTES);
+        $offset = max(0, $size - $maxReadBytes);
         $content = file_get_contents($path, false, null, $offset);
 
         if ($content === false) {

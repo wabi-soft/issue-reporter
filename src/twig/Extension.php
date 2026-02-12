@@ -81,7 +81,7 @@ class Extension extends AbstractExtension
         $cacheBust = App::devMode() ? time() : date('Ymd');
 
         $initConfig = ['token' => $token];
-        if (trim($settings->logFiles) !== '') {
+        if (!empty($settings->logFiles)) {
             $logs = IssueReporter::getInstance()->logCollector->collect();
             if (!empty($logs)) {
                 $initConfig['serverLogs'] = $logs;
