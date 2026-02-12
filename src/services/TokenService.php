@@ -9,6 +9,13 @@ use yii\base\Component;
 
 class TokenService extends Component
 {
+    /**
+     * Generate an HMAC-signed token for the IssueRelay widget.
+     *
+     * The token is used by the widget JS for both IssueRelay API auth and the
+     * log endpoint. A single unscoped token is intentional — both consumers
+     * run in the same browser context with access to the same credentials.
+     */
     public function generateToken(string $email): string
     {
         $settings = IssueReporter::getInstance()->getSettings();
@@ -37,6 +44,7 @@ class TokenService extends Component
     {
         $settings = IssueReporter::getInstance()->getSettings();
         $secret = App::parseEnv($settings->apiSecret);
+        $projectUuid = App::parseEnv($settings->projectUuid);
 
         if (empty($secret) || str_starts_with($secret, '$')) {
             return false;
@@ -55,7 +63,7 @@ class TokenService extends Component
             return false;
         }
 
-        // Decode and check expiration
+        // Decode and check claims
         $payload = json_decode(
             base64_decode(strtr($encoded, '-_', '+/')),
             true
@@ -67,6 +75,11 @@ class TokenService extends Component
 
         if ($payload['exp'] < time()) {
             Craft::warning('Issue Reporter: Expired token on log endpoint.', __METHOD__);
+            return false;
+        }
+
+        // Verify token was issued for this project
+        if (!isset($payload['pid']) || $payload['pid'] !== $projectUuid) {
             return false;
         }
 

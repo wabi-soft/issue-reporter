@@ -23,9 +23,9 @@
     errors: settings.getErrors('projectUuid'),
 }) }}
 
-{{ forms.textField({
+{{ forms.passwordField({
     label: 'API Key',
-    instructions: 'For your reference only — not used by the plugin.',
+    instructions: 'For your reference only — not used by the plugin. Stored in project config.',
     name: 'apiKey',
     value: settings.apiKey,
     errors: settings.getErrors('apiKey'),

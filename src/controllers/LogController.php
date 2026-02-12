@@ -15,9 +15,30 @@ class LogController extends Controller
     private const MAX_TOTAL_CHARS = 50000; // 50K global cap
 
     private const REDACTION_PATTERNS = [
-        '/((?:api[_-]?key|token|secret|password|passwd|auth)\s*[=:]\s*)\S+/i',
+        // Credentials in key=value or key: value format
+        '/((?:api[_-]?key|token|secret|password|passwd|auth|session[_-]?id|csrf)\s*[=:]\s*)\S+/i',
+        // Credentials in JSON "key": "value" format
+        '/((?:api[_-]?key|token|secret|password|passwd|auth|session[_-]?id|csrf)"\s*:\s*")[^"]*(")/i',
+        // Authorization headers
         '/(Authorization:\s*(?:Bearer|Basic)\s+)\S+/i',
-        '/((?:mysql|pgsql|postgres|redis|mongodb):\/\/)[^\s]+/i',
+        // Cookie headers
+        '/(Cookie:\s*)\S+/i',
+        // Database/service connection strings
+        '/((?:mysql|pgsql|postgres|redis|mongodb|amqp|memcached|smtp):\/\/)[^\s]+/i',
+        // AWS access keys (AKIA...)
+        '/\bAKIA[0-9A-Z]{16}\b/',
+        // PEM private keys
+        '/-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----.+?-----END\s+(?:RSA\s+)?PRIVATE\s+KEY-----/s',
+    ];
+
+    private const REDACTION_REPLACEMENTS = [
+        '$1[REDACTED]',
+        '$1[REDACTED]$2',
+        '$1[REDACTED]',
+        '$1[REDACTED]',
+        '$1[REDACTED]',
+        '[REDACTED]',
+        '[REDACTED]',
     ];
 
     public function actionRecentLogs(): Response
@@ -91,6 +112,11 @@ class LogController extends Controller
             return [];
         }
 
+        $realLogPath = realpath($logPath);
+        if ($realLogPath === false) {
+            return [];
+        }
+
         $paths = [];
 
         foreach ($entries as $entry) {
@@ -101,7 +127,7 @@ class LogController extends Controller
                 $matched = glob($logPath . DIRECTORY_SEPARATOR . $entry);
                 if ($matched !== false) {
                     foreach ($matched as $match) {
-                        if (is_file($match) && is_readable($match)) {
+                        if ($this->isAllowedPath($match, $realLogPath)) {
                             $paths[] = $match;
                         }
                     }
@@ -109,13 +135,27 @@ class LogController extends Controller
             } else {
                 // Explicit filename
                 $path = $logPath . DIRECTORY_SEPARATOR . $entry;
-                if (is_file($path) && is_readable($path)) {
+                if ($this->isAllowedPath($path, $realLogPath)) {
                     $paths[] = $path;
                 }
             }
         }
 
         return $paths;
+    }
+
+    /**
+     * Verify a path is a readable file that resolves within the log directory.
+     * Prevents symlink attacks that could read files outside storage/logs/.
+     */
+    private function isAllowedPath(string $path, string $realLogPath): bool
+    {
+        $real = realpath($path);
+
+        return $real !== false
+            && str_starts_with($real, $realLogPath . DIRECTORY_SEPARATOR)
+            && is_file($real)
+            && is_readable($real);
     }
 
     private function readTail(string $path): string
@@ -146,11 +186,7 @@ class LogController extends Controller
 
     private function redact(string $content): string
     {
-        foreach (self::REDACTION_PATTERNS as $pattern) {
-            $content = preg_replace($pattern, '$1[REDACTED]', $content);
-        }
-
-        return $content;
+        return preg_replace(self::REDACTION_PATTERNS, self::REDACTION_REPLACEMENTS, $content);
     }
 
     private function truncate(string $content, int $maxChars): string
