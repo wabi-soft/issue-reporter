@@ -89,14 +89,14 @@ class Extension extends AbstractExtension
         }
 
         $theme = array_filter([
-            'primary' => $settings->primaryColor,
-            'primaryHover' => $settings->primaryHoverColor,
+            'primary' => $settings->primaryColor ? '#' . ltrim($settings->primaryColor, '#') : null,
+            'primaryHover' => $settings->primaryHoverColor ? '#' . ltrim($settings->primaryHoverColor, '#') : null,
         ]);
         if (!empty($theme)) {
             $initConfig['theme'] = $theme;
         }
 
-        $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES);
+        $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
 
         return <<<HTML
         <script src="{$hostUrl}/widget/widget.js?v={$cacheBust}" defer></script>

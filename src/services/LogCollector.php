@@ -107,7 +107,7 @@ class LogCollector extends Component
             }
         }
 
-        return $paths;
+        return array_values(array_unique($paths));
     }
 
     private function isAllowedPath(string $path, string $realLogPath): bool

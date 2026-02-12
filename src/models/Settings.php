@@ -12,7 +12,7 @@ class Settings extends Model
     public int $tokenTtl = 3600;
     public bool $autoInject = true;
     public array $allowedUserGroups = [];
-    public array $logFiles = [['pattern' => '*.log']];
+    public array $logFiles = [['pattern' => 'web.log']];
     public int $maxLogFiles = 5;
     public int $maxLogFileSize = 32;
     public int $maxTotalLogSize = 10000;
@@ -29,10 +29,10 @@ class Settings extends Model
             ['maxLogFiles', 'integer', 'min' => 1, 'max' => 10],
             ['maxLogFileSize', 'integer', 'min' => 8, 'max' => 64],
             ['maxTotalLogSize', 'integer', 'min' => 2000, 'max' => 50000],
-            [['primaryColor', 'primaryHoverColor'], 'match', 'pattern' => '/^#[0-9a-fA-F]{6}$/', 'message' => 'Must be a valid hex color (e.g. #1D4ED8).'],
+            [['primaryColor', 'primaryHoverColor'], 'filter', 'filter' => fn($v) => $v ? preg_replace('/\s/', '', $v) : $v],
             ['logFiles', function ($attribute) {
                 foreach ($this->$attribute as $row) {
-                    if (!isset($row['pattern']) || !preg_match('/^[a-zA-Z0-9.*_-]+$/', $row['pattern'])) {
+                    if (!is_array($row) || !isset($row['pattern']) || !preg_match('/^[a-zA-Z0-9.*_-]+$/', $row['pattern'])) {
                         $this->addError($attribute, 'Each pattern may only contain filenames and wildcards (*).');
                         return;
                     }

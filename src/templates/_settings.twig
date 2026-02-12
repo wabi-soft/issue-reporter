@@ -118,7 +118,7 @@
 
 {{ forms.textField({
     label: 'Max File Read Size (KB)',
-    instructions: 'Bytes to read from the tail of each log file (min 8 KB / max 64 KB). Keeps memory usage predictable during collection.',
+    instructions: 'Kilobytes to read from the tail of each log file (min 8 / max 64). Keeps memory usage predictable during collection.',
     name: 'maxLogFileSize',
     value: settings.maxLogFileSize,
     type: 'number',
