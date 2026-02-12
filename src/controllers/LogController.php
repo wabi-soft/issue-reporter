@@ -43,7 +43,7 @@ class LogController extends Controller
 
     public function actionRecentLogs(): Response
     {
-        $this->requireAcceptsJson();
+        $this->requireGetRequest();
 
         // Validate HMAC Bearer token
         $authHeader = Craft::$app->getRequest()->getHeaders()->get('Authorization');
@@ -186,7 +186,7 @@ class LogController extends Controller
 
     private function redact(string $content): string
     {
-        return preg_replace(self::REDACTION_PATTERNS, self::REDACTION_REPLACEMENTS, $content);
+        return preg_replace(self::REDACTION_PATTERNS, self::REDACTION_REPLACEMENTS, $content) ?? $content;
     }
 
     private function truncate(string $content, int $maxChars): string
