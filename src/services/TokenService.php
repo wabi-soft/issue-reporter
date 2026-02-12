@@ -32,4 +32,44 @@ class TokenService extends Component
 
         return $encoded . '.' . $signature;
     }
+
+    public function validateToken(string $token): bool
+    {
+        $settings = IssueReporter::getInstance()->getSettings();
+        $secret = App::parseEnv($settings->apiSecret);
+
+        if (empty($secret) || str_starts_with($secret, '$')) {
+            return false;
+        }
+
+        $parts = explode('.', $token, 2);
+        if (count($parts) !== 2) {
+            return false;
+        }
+
+        [$encoded, $signature] = $parts;
+
+        // Verify HMAC signature (constant-time comparison)
+        $expectedSignature = hash_hmac('sha256', $encoded, $secret);
+        if (!hash_equals($expectedSignature, $signature)) {
+            return false;
+        }
+
+        // Decode and check expiration
+        $payload = json_decode(
+            base64_decode(strtr($encoded, '-_', '+/')),
+            true
+        );
+
+        if (!is_array($payload) || !isset($payload['exp'])) {
+            return false;
+        }
+
+        if ($payload['exp'] < time()) {
+            Craft::warning('Issue Reporter: Expired token on log endpoint.', __METHOD__);
+            return false;
+        }
+
+        return true;
+    }
 }

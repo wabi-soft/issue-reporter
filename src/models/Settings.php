@@ -13,6 +13,7 @@ class Settings extends Model
     public int $tokenTtl = 3600;
     public bool $autoInject = true;
     public array $allowedUserGroups = [];
+    public string $logFiles = '*.log';
 
     protected function defineRules(): array
     {

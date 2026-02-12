@@ -14,7 +14,7 @@ The `IssueRelay.init()` call will include a new optional property:
 ```js
 IssueRelay.init({
   token: 'existing-hmac-token',
-  logsEndpoint: 'https://example.com/actions/issue-reporter/logs/recent'  // NEW
+  logsEndpoint: 'https://example.com/actions/issue-reporter/logs/recent-logs'  // NEW
 });
 ```
 
@@ -28,6 +28,7 @@ IssueRelay.init({
 ```
 GET {logsEndpoint}
 Authorization: Bearer {token}
+Accept: application/json
 ```
 
 The `token` is the same HMAC token already used by the widget. Send it in the `Authorization` header as a Bearer token.
@@ -44,14 +45,12 @@ The `token` is the same HMAC token already used by the widget. Send it in the `A
 ```
 
 - `logs` is an object where keys are log file names and values are raw text strings.
-- Logs are already filtered to the configured time window (default: last 10 minutes).
-- Logs are already sanitized (sensitive patterns redacted by the plugin).
-- Logs are already size-capped (truncated from oldest entries).
-- If no logs match or all configured files are missing, `logs` will be an empty object `{}`.
+- Logs are the tail of each configured file (last ~256KB), already redacted and size-capped (~50K total).
+- If no logs exist or all configured files are missing, `logs` will be an empty object `{}`.
 
 ### Error Handling
 
-- **Non-200 response:** Proceed with issue submission without logs. Do not block issue creation.
+- **Non-200 response (401 if token invalid/expired):** Proceed with issue submission without logs. Do not block issue creation.
 - **Network timeout:** Use a reasonable timeout (5 seconds). If it expires, submit without logs.
 - **Empty logs:** If `logs` is `{}`, omit the log section from the issue body entirely.
 
@@ -172,7 +171,7 @@ Since log fetching is best-effort and non-blocking:
 
 - **Happy path:** `logsEndpoint` provided → logs fetched → included in issue body
 - **No endpoint:** `logsEndpoint` omitted → no log fetch → issue created normally
-- **Endpoint fails (500, timeout, network error):** Issue created normally without logs, no error shown to user
+- **Endpoint fails (401, 500, timeout, network error):** Issue created normally without logs, no error shown to user
 - **Empty logs:** `logs: {}` → no log section in issue body
 - **Large logs:** Verify truncation works and issue body stays under 65K chars
-- **CORS:** The endpoint is on the same origin as the widget (both on the Craft site), so CORS should not be an issue. But if IssueRelay hosts the widget JS on a different domain, the Craft endpoint may need to include CORS headers. The plugin should handle this — but worth verifying.
+- **CORS:** The endpoint is on the same origin as the widget (both on the Craft site). The widget JS is loaded via `<script src="...">` and executes in the host page's origin context, making the `fetch()` a same-origin request. CORS is not an issue.

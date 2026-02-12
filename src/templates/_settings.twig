@@ -71,3 +71,15 @@
         options: userGroupOptions,
     }) }}
 {% endif %}
+
+<hr>
+<h2>Log Settings</h2>
+
+{{ forms.textField({
+    label: 'Log Files',
+    instructions: 'Log filenames from `storage/logs/` to include with issue submissions. Supports wildcards (`*.log`) and comma-separated names (`web.log, queue.log`). Leave empty to disable.',
+    id: 'logFiles',
+    name: 'logFiles',
+    value: settings.logFiles,
+    errors: settings.getErrors('logFiles'),
+}) }}

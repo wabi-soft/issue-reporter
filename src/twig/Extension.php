@@ -4,6 +4,7 @@ namespace wabisoft\craftissuereporter\twig;
 
 use Craft;
 use craft\helpers\App;
+use craft\helpers\UrlHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 use wabisoft\craftissuereporter\IssueReporter;
@@ -80,13 +81,19 @@ class Extension extends AbstractExtension
 
         $cacheBust = App::devMode() ? time() : date('Ymd');
 
+        $initConfig = ['token' => $token];
+        if (trim($settings->logFiles) !== '') {
+            $initConfig['logsEndpoint'] = UrlHelper::actionUrl('issue-reporter/logs/recent-logs');
+        }
+        $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES);
+
         return <<<HTML
         <script src="{$hostUrl}/widget/widget.js?v={$cacheBust}" defer></script>
         <script>
           (function() {
             function initWidget() {
               if (typeof IssueRelay !== 'undefined') {
-                IssueRelay.init({ token: '{$token}' });
+                IssueRelay.init({$initConfigJson});
               }
             }
             if (document.readyState === 'loading') {
