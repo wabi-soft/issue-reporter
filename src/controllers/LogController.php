@@ -38,7 +38,7 @@ class LogController extends Controller
 
         $logs = $this->collectLogs();
 
-        $response = $this->asJson(['logs' => $logs]);
+        $response = $this->asJson(['logs' => $logs ?: new \stdClass()]);
         $response->headers->set('Cache-Control', 'no-store, private');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 

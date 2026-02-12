@@ -231,7 +231,7 @@ class LogController extends Controller
 }
 ```
 
-**Route:** `GET /actions/issue-reporter/logs/recent-logs`
+**Route:** `GET /actions/issue-reporter/log/recent-logs`
 
 **Auth:** HMAC Bearer token via `Authorization` header. The widget already has a valid token from `IssueRelay.init()`.
 
@@ -287,7 +287,7 @@ $initConfig = ['token' => $token];
 
 $settings = IssueReporter::getInstance()->getSettings();
 if (trim($settings->logFiles) !== '') {
-    $initConfig['logsEndpoint'] = UrlHelper::actionUrl('issue-reporter/logs/recent-logs');
+    $initConfig['logsEndpoint'] = UrlHelper::actionUrl('issue-reporter/log/recent-logs');
 }
 
 $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES);
@@ -317,13 +317,13 @@ The widget JS needs to be updated (in the IssueRelay project) to:
 3. Include the response `logs` object in the submission payload as `serverLogs`
 4. Handle failure gracefully (timeout, error → submit without logs)
 
-See: `/Users/dustinwalker/Projects/wabi-soft/issuerelay-backend/docs/plans/2026-02-11-issuerelay-log-support-plan.md`
+See: `docs/brainstorms/2026-02-11-issuerelay-log-support-plan.md` (also copied to the IssueRelay backend repo)
 
 ---
 
 ## Acceptance Criteria
 
-- [x] `GET /actions/issue-reporter/logs/recent-logs` with valid Bearer token returns `{ "logs": { ... } }`
+- [x] `GET /actions/issue-reporter/log/recent-logs` with valid Bearer token returns `{ "logs": { ... } }`
 - [x] Endpoint returns `401` for missing, invalid, or expired tokens
 - [x] Endpoint returns `200` with `{ "logs": {} }` when no log files have content
 - [x] Missing/unreadable log files are silently skipped with a `Craft::warning()`

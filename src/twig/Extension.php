@@ -83,7 +83,7 @@ class Extension extends AbstractExtension
 
         $initConfig = ['token' => $token];
         if (trim($settings->logFiles) !== '') {
-            $initConfig['logsEndpoint'] = UrlHelper::actionUrl('issue-reporter/logs/recent-logs');
+            $initConfig['logsEndpoint'] = UrlHelper::actionUrl('issue-reporter/log/recent-logs');
         }
         $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES);
 

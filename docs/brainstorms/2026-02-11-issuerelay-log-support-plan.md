@@ -14,7 +14,7 @@ The `IssueRelay.init()` call will include a new optional property:
 ```js
 IssueRelay.init({
   token: 'existing-hmac-token',
-  logsEndpoint: 'https://example.com/actions/issue-reporter/logs/recent-logs'  // NEW
+  logsEndpoint: 'https://example.com/actions/issue-reporter/log/recent-logs'  // NEW
 });
 ```
 
