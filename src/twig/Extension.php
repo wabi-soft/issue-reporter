@@ -4,7 +4,6 @@ namespace wabisoft\craftissuereporter\twig;
 
 use Craft;
 use craft\helpers\App;
-use craft\helpers\UrlHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 use wabisoft\craftissuereporter\IssueReporter;
@@ -83,7 +82,10 @@ class Extension extends AbstractExtension
 
         $initConfig = ['token' => $token];
         if (trim($settings->logFiles) !== '') {
-            $initConfig['logsEndpoint'] = UrlHelper::actionUrl('issue-reporter/log/recent-logs');
+            $logs = IssueReporter::getInstance()->logCollector->collect();
+            if (!empty($logs)) {
+                $initConfig['serverLogs'] = $logs;
+            }
         }
         $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES);
 
