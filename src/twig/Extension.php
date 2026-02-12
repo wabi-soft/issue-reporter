@@ -80,13 +80,31 @@ class Extension extends AbstractExtension
 
         $cacheBust = App::devMode() ? time() : date('Ymd');
 
+        $initConfig = ['token' => $token];
+        if (!empty($settings->logFiles)) {
+            $logs = IssueReporter::getInstance()->logCollector->collect();
+            if (!empty($logs)) {
+                $initConfig['serverLogs'] = $logs;
+            }
+        }
+
+        $theme = array_filter([
+            'primary' => $settings->primaryColor ? '#' . ltrim($settings->primaryColor, '#') : null,
+            'primaryHover' => $settings->primaryHoverColor ? '#' . ltrim($settings->primaryHoverColor, '#') : null,
+        ]);
+        if (!empty($theme)) {
+            $initConfig['theme'] = $theme;
+        }
+
+        $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
+
         return <<<HTML
         <script src="{$hostUrl}/widget/widget.js?v={$cacheBust}" defer></script>
         <script>
           (function() {
             function initWidget() {
               if (typeof IssueRelay !== 'undefined') {
-                IssueRelay.init({ token: '{$token}' });
+                IssueRelay.init({$initConfigJson});
               }
             }
             if (document.readyState === 'loading') {

@@ -23,14 +23,6 @@
     errors: settings.getErrors('projectUuid'),
 }) }}
 
-{{ forms.textField({
-    label: 'API Key',
-    instructions: 'For your reference only — not used by the plugin.',
-    name: 'apiKey',
-    value: settings.apiKey,
-    errors: settings.getErrors('apiKey'),
-}) }}
-
 {{ forms.passwordField({
     label: 'API Secret',
     instructions: 'Used to sign widget tokens. For production, use `$ENV_VAR` syntax.',
@@ -71,3 +63,79 @@
         options: userGroupOptions,
     }) }}
 {% endif %}
+
+<hr>
+<h2>Widget Theme</h2>
+<p class="light">Optional. Overrides the project theme set in the IssueRelay dashboard.</p>
+
+{{ forms.colorField({
+    label: 'Primary Color',
+    name: 'primaryColor',
+    value: settings.primaryColor,
+    errors: settings.getErrors('primaryColor'),
+}) }}
+
+{{ forms.colorField({
+    label: 'Primary Hover Color',
+    name: 'primaryHoverColor',
+    value: settings.primaryHoverColor,
+    errors: settings.getErrors('primaryHoverColor'),
+}) }}
+
+<hr>
+<h2>Log Settings</h2>
+
+{{ forms.editableTableField({
+    label: 'Log Files',
+    instructions: 'Log filenames from `storage/logs/` to include with issue submissions. Supports wildcards (`web-*.log`, `console-*.log`). Only files modified in the last 48 hours are included. Remove all rows to disable.',
+    id: 'logFiles',
+    name: 'logFiles',
+    cols: {
+        pattern: {
+            type: 'singleline',
+            heading: 'Pattern',
+        },
+    },
+    rows: settings.logFiles,
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: true,
+    addRowLabel: 'Add a pattern',
+    errors: settings.getErrors('logFiles'),
+}) }}
+
+{{ forms.textField({
+    label: 'Max Log Files',
+    instructions: 'Maximum number of log files to include (min 1 / max 10). Most recent files are prioritized.',
+    name: 'maxLogFiles',
+    value: settings.maxLogFiles,
+    type: 'number',
+    size: 5,
+    min: 1,
+    max: 10,
+    errors: settings.getErrors('maxLogFiles'),
+}) }}
+
+{{ forms.textField({
+    label: 'Max File Read Size (KB)',
+    instructions: 'Kilobytes to read from the tail of each log file (min 8 / max 64). Keeps memory usage predictable during collection.',
+    name: 'maxLogFileSize',
+    value: settings.maxLogFileSize,
+    type: 'number',
+    size: 10,
+    min: 8,
+    max: 64,
+    errors: settings.getErrors('maxLogFileSize'),
+}) }}
+
+{{ forms.textField({
+    label: 'Max Total Log Size',
+    instructions: 'Maximum total characters across all log files in the payload (min 2,000 / max 50,000). Prevents oversized submissions to IssueRelay.',
+    name: 'maxTotalLogSize',
+    value: settings.maxTotalLogSize,
+    type: 'number',
+    size: 10,
+    min: 2000,
+    max: 50000,
+    errors: settings.getErrors('maxTotalLogSize'),
+}) }}
