@@ -11,6 +11,7 @@ class Settings extends Model
     public string $apiSecret = '';
     public int $tokenTtl = 3600;
     public bool $autoInject = true;
+    public bool $allowAdmins = false;
     public array $allowedUserGroups = [];
     public array $logFiles = [['pattern' => 'web.log']];
     public int $maxLogFiles = 5;
