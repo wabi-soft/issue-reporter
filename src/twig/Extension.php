@@ -57,22 +57,19 @@ class Extension extends AbstractExtension
 
         $settings = IssueReporter::getInstance()->getSettings();
 
-        if (!empty($settings->allowedUserGroups) || $settings->allowAdmins) {
-            $allowed = false;
+        if (!empty($settings->allowedUserGroups)) {
+            $allowAdmins = in_array('__admins__', $settings->allowedUserGroups, true);
+            $groupUids = array_filter($settings->allowedUserGroups, fn($v) => $v !== '__admins__');
 
-            if ($settings->allowAdmins && $user->admin) {
-                $allowed = true;
-            }
+            $allowed = $allowAdmins && $user->admin;
 
-            if (!$allowed && !empty($settings->allowedUserGroups)) {
+            if (!$allowed && !empty($groupUids)) {
                 $userGroupUids = array_map(fn($g) => $g->uid, $user->getGroups());
                 $validGroupUids = array_filter(
-                    $settings->allowedUserGroups,
+                    $groupUids,
                     fn($uid) => Craft::$app->getUserGroups()->getGroupByUid($uid) !== null
                 );
-                if (!empty(array_intersect($validGroupUids, $userGroupUids))) {
-                    $allowed = true;
-                }
+                $allowed = !empty(array_intersect($validGroupUids, $userGroupUids));
             }
 
             if (!$allowed) {
