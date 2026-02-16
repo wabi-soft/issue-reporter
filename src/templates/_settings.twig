@@ -55,29 +55,15 @@
 
 {% set userGroupOptions = craft.app.userGroups.getAllGroups() | map(g => { label: g.name, value: g.uid }) %}
 {% if userGroupOptions | length %}
-    <div id="allowed-user-groups-field" class="field">
-        <div class="heading">
-            <label>Allowed User Groups</label>
-        </div>
-        <div class="instructions">
-            <p>Leave empty to allow all logged-in CP users.</p>
-        </div>
-        <div class="input">
-            {{ forms.checkboxField({
-                label: 'Admins',
-                name: 'allowAdmins',
-                checked: settings.allowAdmins,
-            }) }}
-            {% for option in userGroupOptions %}
-                {{ forms.checkboxField({
-                    label: option.label,
-                    name: 'allowedUserGroups[]',
-                    value: option.value,
-                    checked: option.value in settings.allowedUserGroups,
-                }) }}
-            {% endfor %}
-        </div>
-    </div>
+    {% set allOptions = [{ label: 'Admins', value: '__admins__' }] | merge(userGroupOptions) %}
+    {% set allValues = settings.allowedUserGroups %}
+    {{ forms.checkboxSelectField({
+        label: 'Allowed User Groups',
+        instructions: 'Leave empty to allow all logged-in CP users.',
+        name: 'allowedUserGroups',
+        values: allValues,
+        options: allOptions,
+    }) }}
 {% endif %}
 
 <hr>
