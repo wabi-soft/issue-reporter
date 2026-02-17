@@ -64,7 +64,8 @@ class ContextCollector extends Component
 
             $resolvedPath = Craft::$app->getView()->resolveTemplate($template);
             if ($resolvedPath) {
-                $info['templatePath'] = $resolvedPath;
+                $basePath = Craft::$app->getView()->getTemplatesPath();
+                $info['templatePath'] = ltrim(str_replace($basePath, '', $resolvedPath), '/');
             }
         }
 
