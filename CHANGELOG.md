@@ -13,6 +13,15 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [0.2.3](https://github.com/wabi-soft/issue-reporter/compare/v0.2.2...v0.2.3) (2026-02-17)
+
+### Features
+
+* Add Craft context to IssueRelay widget payload (#2) ([39f9a3](https://github.com/wabi-soft/issue-reporter/commit/39f9a3390b7cacd16bd6a537640fe069c6ac3941))
+
+
+---
+
 ## [0.2.2](https://github.com/wabi-soft/issue-reporter/compare/v0.2.1...v0.2.2) (2026-02-16)
 
 
