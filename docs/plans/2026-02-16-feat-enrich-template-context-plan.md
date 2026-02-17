@@ -20,7 +20,7 @@ Template: index.twig
 
 ```
 Template: index.twig
-Template Path: /var/www/html/templates/index.twig
+Template Path: index.twig
 Template Mode: site
 ```
 
@@ -36,18 +36,21 @@ if ($template !== null) {
 
     $resolvedPath = Craft::$app->getView()->resolveTemplate($template);
     if ($resolvedPath) {
-        $info['templatePath'] = $resolvedPath;
+        $basePath = Craft::$app->getView()->getTemplatesPath();
+        if (str_starts_with($resolvedPath, $basePath)) {
+            $info['templatePath'] = ltrim(substr($resolvedPath, strlen($basePath)), DIRECTORY_SEPARATOR);
+        }
     }
 }
 
 $info['templateMode'] = Craft::$app->getView()->getTemplateMode();
 ```
 
-- `resolveTemplate()` returns `string|false` — only include if it resolves
+- `resolveTemplate()` returns `string|false` — only include if it resolves and is under the templates root (prevents leaking absolute paths for plugin/module templates)
 - `getTemplateMode()` returns `'site'` or `'cp'` — always available, no guard needed
 - `templateMode` goes outside the `$template !== null` block since it's useful even when template name is unavailable (manual Twig function path)
 
-### No other files change
+### No other runtime files change
 
 - No new settings, no new services, no template/UI changes
 - Payload size increase: ~50-80 bytes
