@@ -1,0 +1,78 @@
+<?php
+
+namespace wabisoft\craftissuereporter\services;
+
+use Craft;
+use craft\base\Component;
+use craft\helpers\App;
+
+class ContextCollector extends Component
+{
+    public function collect(?string $template = null): array
+    {
+        $context = [];
+
+        try {
+            $context['environment'] = $this->collectEnvironment();
+        } catch (\Throwable $e) {
+            Craft::warning("Failed to collect environment context: {$e->getMessage()}", __METHOD__);
+        }
+
+        try {
+            $context['request'] = $this->collectRequest($template);
+        } catch (\Throwable $e) {
+            Craft::warning("Failed to collect request context: {$e->getMessage()}", __METHOD__);
+        }
+
+        return $context;
+    }
+
+    private function collectEnvironment(): array
+    {
+        $plugins = [];
+        foreach (Craft::$app->getPlugins()->getAllPlugins() as $plugin) {
+            $plugins[$plugin->handle] = $plugin->getVersion();
+        }
+
+        return [
+            'craft' => Craft::$app->getVersion(),
+            'php' => PHP_VERSION,
+            'db' => Craft::$app->getDb()->getDriverName() . ' ' . Craft::$app->getDb()->getSchema()->getServerVersion(),
+            'edition' => Craft::$app->edition->name,
+            'devMode' => App::devMode(),
+            'environment' => Craft::$app->env ?? 'unknown',
+            'plugins' => $plugins,
+        ];
+    }
+
+    private function collectRequest(?string $template): array
+    {
+        $request = Craft::$app->getRequest();
+        $site = Craft::$app->getSites()->getCurrentSite();
+
+        $url = $request->getAbsoluteUrl();
+
+        $info = [
+            // Strip query string to avoid leaking preview tokens or PII
+            'url' => explode('?', $url, 2)[0],
+            'siteHandle' => $site->handle,
+            'isActionRequest' => $request->getIsActionRequest(),
+        ];
+
+        if ($template !== null) {
+            $info['template'] = $template;
+        }
+
+        $element = Craft::$app->getUrlManager()->getMatchedElement();
+        if ($element) {
+            $parts = explode('\\', get_class($element));
+            $desc = end($parts);
+            if ($element->uri) {
+                $desc .= " ({$element->uri})";
+            }
+            $info['matchedElement'] = $desc;
+        }
+
+        return $info;
+    }
+}
