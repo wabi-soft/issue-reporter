@@ -11,6 +11,7 @@ class Settings extends Model
     public string $apiSecret = '';
     public int $tokenTtl = 3600;
     public bool $autoInject = true;
+    public bool $includeCraftContext = true;
     public array $allowedUserGroups = [];
     public array $logFiles = [['pattern' => 'web.log']];
     public int $maxLogFiles = 5;
@@ -30,7 +31,7 @@ class Settings extends Model
             ['maxLogFileSize', 'integer', 'min' => 8, 'max' => 64],
             ['maxTotalLogSize', 'integer', 'min' => 2000, 'max' => 50000],
             [['primaryColor', 'primaryHoverColor'], 'filter', 'filter' => fn($v) => $v ? preg_replace('/\s/', '', $v) : $v],
-            ['logFiles', function ($attribute) {
+            ['logFiles', function($attribute) {
                 foreach ($this->$attribute as $row) {
                     if (!is_array($row) || !isset($row['pattern']) || !preg_match('/^[a-zA-Z0-9.*_-]+$/', $row['pattern'])) {
                         $this->addError($attribute, 'Each pattern may only contain filenames and wildcards (*).');
