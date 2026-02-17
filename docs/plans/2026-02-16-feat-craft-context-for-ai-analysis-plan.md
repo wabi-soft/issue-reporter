@@ -356,10 +356,10 @@ Add lightswitch field in the "Widget Settings" section, after the auto-inject to
 
 ### Backend (future PR, separate repo)
 
-- [ ] `craft_context` (snake_case) stored on submissions
-- [ ] Displayed in GitHub issue body between user message and server logs
-- [ ] Passed to AI analysis prompt
-- [ ] Truncation logic preserves craft_context before server_logs
+- [x] `craft_context` (snake_case) stored on submissions
+- [x] Displayed in GitHub issue body between user message and server logs
+- [x] Passed to AI analysis prompt
+- [x] Truncation logic preserves craft_context before server_logs
 
 ## Files Changed
 
