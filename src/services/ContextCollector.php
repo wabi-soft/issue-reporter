@@ -61,7 +61,14 @@ class ContextCollector extends Component
 
         if ($template !== null) {
             $info['template'] = $template;
+
+            $resolvedPath = Craft::$app->getView()->resolveTemplate($template);
+            if ($resolvedPath) {
+                $info['templatePath'] = $resolvedPath;
+            }
         }
+
+        $info['templateMode'] = Craft::$app->getView()->getTemplateMode();
 
         $element = Craft::$app->getUrlManager()->getMatchedElement();
         if ($element) {
