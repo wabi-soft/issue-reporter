@@ -43,6 +43,14 @@
     on: settings.autoInject,
 }) }}
 
+{{ forms.lightswitchField({
+    label: 'Include Craft Context',
+    instructions: 'Send Craft environment info and request context with issue submissions. Helps AI analysis diagnose issues more accurately.',
+    id: 'includeCraftContext',
+    name: 'includeCraftContext',
+    on: settings.includeCraftContext,
+}) }}
+
 {{ forms.textField({
     label: 'Token TTL (seconds)',
     instructions: 'How long widget tokens remain valid. Default: 3600 (1 hour).',

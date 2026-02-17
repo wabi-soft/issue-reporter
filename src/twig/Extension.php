@@ -25,6 +25,7 @@ class Extension extends AbstractExtension
             return '';
         }
 
+        // Template name is only available via auto-inject (EVENT_AFTER_RENDER_PAGE_TEMPLATE).
         $html = $this->buildWidgetHtml();
         if ($html !== '') {
             self::$rendered = true;
@@ -43,7 +44,7 @@ class Extension extends AbstractExtension
         self::$rendered = true;
     }
 
-    public function buildWidgetHtml(): string
+    public function buildWidgetHtml(?string $template = null): string
     {
         $request = Craft::$app->getRequest();
         if (!$request->getIsSiteRequest() || $request->getIsPreview()) {
@@ -90,6 +91,14 @@ class Extension extends AbstractExtension
         $cacheBust = App::devMode() ? time() : date('Ymd');
 
         $initConfig = ['token' => $token];
+
+        if ($settings->includeCraftContext) {
+            $context = IssueReporter::getInstance()->contextCollector->collect($template);
+            if (!empty($context)) {
+                $initConfig['craftContext'] = $context;
+            }
+        }
+
         if (!empty($settings->logFiles)) {
             $logs = IssueReporter::getInstance()->logCollector->collect();
             if (!empty($logs)) {
@@ -105,7 +114,12 @@ class Extension extends AbstractExtension
             $initConfig['theme'] = $theme;
         }
 
-        $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
+        try {
+            $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            Craft::warning("Failed to encode widget config: {$e->getMessage()}", __METHOD__);
+            return '';
+        }
 
         return <<<HTML
         <script src="{$hostUrl}/widget/widget.js?v={$cacheBust}" defer></script>
