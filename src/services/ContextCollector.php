@@ -54,7 +54,7 @@ class ContextCollector extends Component
 
         $info = [
             // Strip query string to avoid leaking preview tokens or PII
-            'url' => strtok($url, '?'),
+            'url' => explode('?', $url, 2)[0],
             'siteHandle' => $site->handle,
             'isActionRequest' => $request->getIsActionRequest(),
         ];

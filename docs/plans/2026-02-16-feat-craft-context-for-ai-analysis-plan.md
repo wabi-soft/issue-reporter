@@ -21,6 +21,7 @@ deepened: 2026-02-16
 5. **Backend coordination**: Note `craft_context` snake_case naming for IssueRelay backend fields
 
 ### Corrections From API Research
+
 | Original | Correction |
 |---|---|
 | `Craft::$app->edition->value` returns string like `"pro"` | Returns `int` (0–3). Use `->name` for `"Solo"`, `"Team"`, `"Pro"`, `"Enterprise"` |

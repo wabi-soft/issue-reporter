@@ -25,6 +25,7 @@ class Extension extends AbstractExtension
             return '';
         }
 
+        // Template name is only available via auto-inject (EVENT_AFTER_RENDER_PAGE_TEMPLATE).
         $html = $this->buildWidgetHtml();
         if ($html !== '') {
             self::$rendered = true;
@@ -113,7 +114,12 @@ class Extension extends AbstractExtension
             $initConfig['theme'] = $theme;
         }
 
-        $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_THROW_ON_ERROR);
+        try {
+            $initConfigJson = json_encode($initConfig, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            Craft::warning("Failed to encode widget config: {$e->getMessage()}", __METHOD__);
+            return '';
+        }
 
         return <<<HTML
         <script src="{$hostUrl}/widget/widget.js?v={$cacheBust}" defer></script>
