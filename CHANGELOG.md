@@ -4,6 +4,20 @@
 All notable changes to this project will be documented in this file.
 <!--- END HEADER -->
 
+## [0.2.4](https://github.com/wabi-soft/issue-reporter/compare/v0.2.3...v0.2.4) (2026-02-24)
+
+### Features
+
+* Add template path and mode to craft context ([0bf307](https://github.com/wabi-soft/issue-reporter/commit/0bf3070a2fb3bd039d477b9c7aa156b8fee7913f))
+
+### Bug Fixes
+
+* Guard against absolute path leak for plugin/module templates ([70946b](https://github.com/wabi-soft/issue-reporter/commit/70946bac37b52d106fbf4d2711aee61dd869da90))
+* Make templatePath relative to templates root ([20eba1](https://github.com/wabi-soft/issue-reporter/commit/20eba11875cc90498a2522ad7b30a61e3d190b5f))
+
+
+---
+
 ## [0.2.3](https://github.com/wabi-soft/issue-reporter/compare/v0.2.2...v0.2.3) (2026-02-17)
 
 ### Features
