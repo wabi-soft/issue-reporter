@@ -5,6 +5,7 @@ namespace wabisoft\craftissuereporter;
 use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\helpers\App;
 use craft\events\TemplateEvent;
 use craft\web\View;
 use wabisoft\craftissuereporter\models\Settings;
@@ -64,7 +65,7 @@ class IssueReporter extends Plugin
 
     private function registerAutoInject(): void
     {
-        if (!$this->getSettings()->autoInject) {
+        if (!(App::parseBooleanEnv($this->getSettings()->autoInject) ?? true)) {
             return;
         }
 
