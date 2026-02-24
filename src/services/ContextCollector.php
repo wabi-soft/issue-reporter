@@ -8,7 +8,7 @@ use craft\helpers\App;
 
 class ContextCollector extends Component
 {
-    public function collect(?string $template = null): array
+    public function collect(?string $template = null, ?string $pageUrl = null, ?string $siteHandle = null): array
     {
         $context = [];
 
@@ -22,7 +22,7 @@ class ContextCollector extends Component
         }
 
         try {
-            $req = $this->collectRequest($template);
+            $req = $this->collectRequest($template, $pageUrl, $siteHandle);
             if (is_array($req) && !empty($req)) {
                 $context['request'] = $req;
             }
@@ -51,9 +51,24 @@ class ContextCollector extends Component
         ];
     }
 
-    private function collectRequest(?string $template): array
+    private function collectRequest(?string $template, ?string $pageUrl = null, ?string $siteHandle = null): array
     {
         $request = Craft::$app->getRequest();
+
+        // When called from the AJAX init action, use client-reported values
+        if ($pageUrl !== null) {
+            $info = [
+                'url' => explode('?', $pageUrl, 2)[0],
+                'siteHandle' => $siteHandle ?? Craft::$app->getSites()->getCurrentSite()->handle,
+                'isActionRequest' => false,
+            ];
+
+            if ($template !== null) {
+                $info['template'] = $template;
+            }
+
+            return $info;
+        }
 
         if (!$request->getIsSiteRequest()) {
             return [];
