@@ -23,7 +23,7 @@ class Settings extends Model
 
     public function __construct($config = [])
     {
-        foreach (['autoInject', 'includeCraftContext'] as $attr) {
+        foreach (['autoInject', 'includeCraftContext', 'tokenTtl', 'maxLogFiles', 'maxLogFileSize', 'maxTotalLogSize'] as $attr) {
             if (($config[$attr] ?? null) === '') {
                 unset($config[$attr]);
             }

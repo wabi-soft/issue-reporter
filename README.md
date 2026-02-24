@@ -15,7 +15,7 @@ The widget automatically appears on all front-end pages for users with CP access
 
 All string and numeric settings support `$ENV_VAR` syntax directly in the CP settings fields. Boolean settings support env vars via the dropdown menu.
 
-```
+```shell
 ISSUE_RELAY_HOST_URL=https://issuerelay.com
 ISSUE_RELAY_PROJECT_UUID=your-uuid
 ISSUE_RELAY_API_SECRET=your-secret
@@ -39,7 +39,7 @@ return [
     'tokenTtl' => 3600,
     'autoInject' => true,
     'includeCraftContext' => true,
-    'primaryColor' => App::env('ISSUE_REPORTER_PRIMARY_COLOR'),
+    'primaryColor' => App::env('ISSUE_RELAY_PRIMARY_COLOR'),
     'primaryHoverColor' => null,
     'maxLogFiles' => 5,
     'maxLogFileSize' => 32,

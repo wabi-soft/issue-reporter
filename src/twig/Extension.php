@@ -110,8 +110,8 @@ class Extension extends AbstractExtension
         $primaryHoverColor = App::parseEnv($settings->primaryHoverColor);
 
         $theme = array_filter([
-            'primary' => $primaryColor ? '#' . ltrim($primaryColor, '#') : null,
-            'primaryHover' => $primaryHoverColor ? '#' . ltrim($primaryHoverColor, '#') : null,
+            'primary' => $primaryColor && !str_starts_with($primaryColor, '$') ? '#' . ltrim($primaryColor, '#') : null,
+            'primaryHover' => $primaryHoverColor && !str_starts_with($primaryHoverColor, '$') ? '#' . ltrim($primaryHoverColor, '#') : null,
         ]);
         if (!empty($theme)) {
             $initConfig['theme'] = $theme;
