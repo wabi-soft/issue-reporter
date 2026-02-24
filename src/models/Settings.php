@@ -3,22 +3,56 @@
 namespace wabisoft\craftissuereporter\models;
 
 use craft\base\Model;
+use craft\behaviors\EnvAttributeParserBehavior;
 
 class Settings extends Model
 {
-    public string $hostUrl = '';
+    public string $hostUrl = 'https://issuerelay.com';
     public string $projectUuid = '';
     public string $apiSecret = '';
-    public int $tokenTtl = 3600;
-    public bool $autoInject = true;
-    public bool $includeCraftContext = true;
+    public int|string $tokenTtl = 3600;
+    public bool|string $autoInject = true;
+    public bool|string $includeCraftContext = true;
     public array $allowedUserGroups = [];
     public array $logFiles = [['pattern' => 'web.log']];
-    public int $maxLogFiles = 5;
-    public int $maxLogFileSize = 32;
-    public int $maxTotalLogSize = 10000;
+    public int|string $maxLogFiles = 5;
+    public int|string $maxLogFileSize = 32;
+    public int|string $maxTotalLogSize = 10000;
     public ?string $primaryColor = null;
     public ?string $primaryHoverColor = null;
+
+    public function __construct($config = [])
+    {
+        foreach (['autoInject', 'includeCraftContext'] as $attr) {
+            if (($config[$attr] ?? null) === '') {
+                unset($config[$attr]);
+            }
+        }
+
+        parent::__construct($config);
+    }
+
+    protected function defineBehaviors(): array
+    {
+        return [
+            'parser' => [
+                'class' => EnvAttributeParserBehavior::class,
+                'attributes' => [
+                    'hostUrl',
+                    'projectUuid',
+                    'apiSecret',
+                    'tokenTtl',
+                    'autoInject',
+                    'includeCraftContext',
+                    'maxLogFiles',
+                    'maxLogFileSize',
+                    'maxTotalLogSize',
+                    'primaryColor',
+                    'primaryHoverColor',
+                ],
+            ],
+        ];
+    }
 
     protected function defineRules(): array
     {

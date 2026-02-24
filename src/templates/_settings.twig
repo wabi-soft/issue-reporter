@@ -3,62 +3,89 @@
 
 {% import '_includes/forms.twig' as forms %}
 
+{% set configOverrides = craft.app.config.getConfigFromFile('issue-reporter') %}
+
+{% macro configWarning(setting) -%}
+    This is being overridden by your <code>config/issue-reporter.php</code> file.
+{%- endmacro %}
+
+{% from _self import configWarning %}
+
 <h2>IssueRelay Credentials</h2>
 <p class="light">Copy these from your <a href="https://issuerelay.com" target="_blank">IssueRelay</a> project settings.</p>
 
-{{ forms.textField({
+{{ forms.autosuggestField({
     label: 'Host URL',
     name: 'hostUrl',
+    suggestEnvVars: true,
     value: settings.hostUrl,
-    placeholder: 'https://issuerelay.com',
+    placeholder: '$ISSUE_RELAY_HOST_URL',
     required: true,
     errors: settings.getErrors('hostUrl'),
+    disabled: configOverrides.hostUrl is defined,
+    warning: configOverrides.hostUrl is defined ? configWarning('hostUrl'),
 }) }}
 
-{{ forms.textField({
+{{ forms.autosuggestField({
     label: 'Project UUID',
     name: 'projectUuid',
+    suggestEnvVars: true,
     value: settings.projectUuid,
+    placeholder: '$ISSUE_RELAY_PROJECT_UUID',
     required: true,
     errors: settings.getErrors('projectUuid'),
+    disabled: configOverrides.projectUuid is defined,
+    warning: configOverrides.projectUuid is defined ? configWarning('projectUuid'),
 }) }}
 
-{{ forms.passwordField({
+{{ forms.autosuggestField({
     label: 'API Secret',
-    instructions: 'Used to sign widget tokens. For production, use `$ENV_VAR` syntax.',
+    instructions: 'Used to sign widget tokens.',
     name: 'apiSecret',
+    suggestEnvVars: true,
     value: settings.apiSecret,
+    placeholder: '$ISSUE_RELAY_API_SECRET',
     required: true,
     errors: settings.getErrors('apiSecret'),
+    disabled: configOverrides.apiSecret is defined,
+    warning: configOverrides.apiSecret is defined ? configWarning('apiSecret'),
 }) }}
 
 <hr>
 
 <h2>Widget Settings</h2>
 
-{{ forms.lightswitchField({
+{{ forms.booleanMenuField({
     label: 'Auto-inject Widget',
     instructions: 'Automatically add the widget to all front-end pages for logged-in CP users. When off, use `{{ issueRelayWidget() }}` in your templates.',
     name: 'autoInject',
-    on: settings.autoInject,
+    includeEnvVars: true,
+    value: settings.autoInject,
+    disabled: configOverrides.autoInject is defined,
+    warning: configOverrides.autoInject is defined ? configWarning('autoInject'),
 }) }}
 
-{{ forms.lightswitchField({
+{{ forms.booleanMenuField({
     label: 'Include Craft Context',
     instructions: 'Send Craft environment info and request context with issue submissions. Helps AI analysis diagnose issues more accurately.',
     id: 'includeCraftContext',
     name: 'includeCraftContext',
-    on: settings.includeCraftContext,
+    includeEnvVars: true,
+    value: settings.includeCraftContext,
+    disabled: configOverrides.includeCraftContext is defined,
+    warning: configOverrides.includeCraftContext is defined ? configWarning('includeCraftContext'),
 }) }}
 
-{{ forms.textField({
+{{ forms.autosuggestField({
     label: 'Token TTL (seconds)',
     instructions: 'How long widget tokens remain valid. Default: 3600 (1 hour).',
     name: 'tokenTtl',
+    suggestEnvVars: true,
     value: settings.tokenTtl,
-    type: 'number',
     size: 10,
     errors: settings.getErrors('tokenTtl'),
+    disabled: configOverrides.tokenTtl is defined,
+    warning: configOverrides.tokenTtl is defined ? configWarning('tokenTtl'),
 }) }}
 
 {% set userGroupOptions = craft.app.userGroups.getAllGroups() | map(g => { label: g.name, value: g.uid }) %}
@@ -71,6 +98,8 @@
         name: 'allowedUserGroups',
         values: allValues,
         options: allOptions,
+        disabled: configOverrides.allowedUserGroups is defined,
+        warning: configOverrides.allowedUserGroups is defined ? configWarning('allowedUserGroups'),
     }) }}
 {% endif %}
 
@@ -83,6 +112,8 @@
     name: 'primaryColor',
     value: settings.primaryColor,
     errors: settings.getErrors('primaryColor'),
+    disabled: configOverrides.primaryColor is defined,
+    warning: configOverrides.primaryColor is defined ? configWarning('primaryColor'),
 }) }}
 
 {{ forms.colorField({
@@ -90,6 +121,8 @@
     name: 'primaryHoverColor',
     value: settings.primaryHoverColor,
     errors: settings.getErrors('primaryHoverColor'),
+    disabled: configOverrides.primaryHoverColor is defined,
+    warning: configOverrides.primaryHoverColor is defined ? configWarning('primaryHoverColor'),
 }) }}
 
 <hr>
@@ -112,40 +145,42 @@
     allowReorder: true,
     addRowLabel: 'Add a pattern',
     errors: settings.getErrors('logFiles'),
+    disabled: configOverrides.logFiles is defined,
+    warning: configOverrides.logFiles is defined ? configWarning('logFiles'),
 }) }}
 
-{{ forms.textField({
+{{ forms.autosuggestField({
     label: 'Max Log Files',
     instructions: 'Maximum number of log files to include (min 1 / max 10). Most recent files are prioritized.',
     name: 'maxLogFiles',
+    suggestEnvVars: true,
     value: settings.maxLogFiles,
-    type: 'number',
     size: 5,
-    min: 1,
-    max: 10,
     errors: settings.getErrors('maxLogFiles'),
+    disabled: configOverrides.maxLogFiles is defined,
+    warning: configOverrides.maxLogFiles is defined ? configWarning('maxLogFiles'),
 }) }}
 
-{{ forms.textField({
+{{ forms.autosuggestField({
     label: 'Max File Read Size (KB)',
     instructions: 'Kilobytes to read from the tail of each log file (min 8 / max 64). Keeps memory usage predictable during collection.',
     name: 'maxLogFileSize',
+    suggestEnvVars: true,
     value: settings.maxLogFileSize,
-    type: 'number',
     size: 10,
-    min: 8,
-    max: 64,
     errors: settings.getErrors('maxLogFileSize'),
+    disabled: configOverrides.maxLogFileSize is defined,
+    warning: configOverrides.maxLogFileSize is defined ? configWarning('maxLogFileSize'),
 }) }}
 
-{{ forms.textField({
+{{ forms.autosuggestField({
     label: 'Max Total Log Size',
     instructions: 'Maximum total characters across all log files in the payload (min 2,000 / max 50,000). Prevents oversized submissions to IssueRelay.',
     name: 'maxTotalLogSize',
+    suggestEnvVars: true,
     value: settings.maxTotalLogSize,
-    type: 'number',
     size: 10,
-    min: 2000,
-    max: 50000,
     errors: settings.getErrors('maxTotalLogSize'),
+    disabled: configOverrides.maxTotalLogSize is defined,
+    warning: configOverrides.maxTotalLogSize is defined ? configWarning('maxTotalLogSize'),
 }) }}
