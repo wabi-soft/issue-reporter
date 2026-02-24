@@ -31,7 +31,7 @@ class TokenService extends Component
             'pid' => $projectUuid,
             'email' => strtolower($email),
             'iat' => time(),
-            'exp' => time() + (int) App::parseEnv($settings->tokenTtl),
+            'exp' => time() + (($ttl = (int) App::parseEnv($settings->tokenTtl)) > 0 ? $ttl : 3600),
         ]);
 
         $encoded = rtrim(strtr(base64_encode($payload), '+/', '-_'), '=');

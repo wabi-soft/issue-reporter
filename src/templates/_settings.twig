@@ -5,7 +5,7 @@
 
 {% set configOverrides = craft.app.config.getConfigFromFile('issue-reporter') %}
 
-{% macro configWarning(setting) -%}
+{% macro configWarning() -%}
     This is being overridden by your <code>config/issue-reporter.php</code> file.
 {%- endmacro %}
 
@@ -23,7 +23,7 @@
     required: true,
     errors: settings.getErrors('hostUrl'),
     disabled: configOverrides.hostUrl is defined,
-    warning: configOverrides.hostUrl is defined ? configWarning('hostUrl'),
+    warning: configOverrides.hostUrl is defined ? configWarning(),
 }) }}
 
 {{ forms.autosuggestField({
@@ -35,12 +35,12 @@
     required: true,
     errors: settings.getErrors('projectUuid'),
     disabled: configOverrides.projectUuid is defined,
-    warning: configOverrides.projectUuid is defined ? configWarning('projectUuid'),
+    warning: configOverrides.projectUuid is defined ? configWarning(),
 }) }}
 
 {{ forms.autosuggestField({
     label: 'API Secret',
-    instructions: 'Used to sign widget tokens.',
+    instructions: 'Used to sign widget tokens. Use an environment variable to avoid storing secrets in the database.',
     name: 'apiSecret',
     suggestEnvVars: true,
     value: settings.apiSecret,
@@ -48,7 +48,7 @@
     required: true,
     errors: settings.getErrors('apiSecret'),
     disabled: configOverrides.apiSecret is defined,
-    warning: configOverrides.apiSecret is defined ? configWarning('apiSecret'),
+    warning: configOverrides.apiSecret is defined ? configWarning(),
 }) }}
 
 <hr>
@@ -62,7 +62,7 @@
     includeEnvVars: true,
     value: settings.autoInject,
     disabled: configOverrides.autoInject is defined,
-    warning: configOverrides.autoInject is defined ? configWarning('autoInject'),
+    warning: configOverrides.autoInject is defined ? configWarning(),
 }) }}
 
 {{ forms.booleanMenuField({
@@ -73,7 +73,7 @@
     includeEnvVars: true,
     value: settings.includeCraftContext,
     disabled: configOverrides.includeCraftContext is defined,
-    warning: configOverrides.includeCraftContext is defined ? configWarning('includeCraftContext'),
+    warning: configOverrides.includeCraftContext is defined ? configWarning(),
 }) }}
 
 {{ forms.autosuggestField({
@@ -85,7 +85,7 @@
     size: 10,
     errors: settings.getErrors('tokenTtl'),
     disabled: configOverrides.tokenTtl is defined,
-    warning: configOverrides.tokenTtl is defined ? configWarning('tokenTtl'),
+    warning: configOverrides.tokenTtl is defined ? configWarning(),
 }) }}
 
 {% set userGroupOptions = craft.app.userGroups.getAllGroups() | map(g => { label: g.name, value: g.uid }) %}
@@ -99,7 +99,7 @@
         values: allValues,
         options: allOptions,
         disabled: configOverrides.allowedUserGroups is defined,
-        warning: configOverrides.allowedUserGroups is defined ? configWarning('allowedUserGroups'),
+        warning: configOverrides.allowedUserGroups is defined ? configWarning(),
     }) }}
 {% endif %}
 
@@ -113,7 +113,7 @@
     value: settings.primaryColor,
     errors: settings.getErrors('primaryColor'),
     disabled: configOverrides.primaryColor is defined,
-    warning: configOverrides.primaryColor is defined ? configWarning('primaryColor'),
+    warning: configOverrides.primaryColor is defined ? configWarning(),
 }) }}
 
 {{ forms.colorField({
@@ -122,7 +122,7 @@
     value: settings.primaryHoverColor,
     errors: settings.getErrors('primaryHoverColor'),
     disabled: configOverrides.primaryHoverColor is defined,
-    warning: configOverrides.primaryHoverColor is defined ? configWarning('primaryHoverColor'),
+    warning: configOverrides.primaryHoverColor is defined ? configWarning(),
 }) }}
 
 <hr>
@@ -146,7 +146,7 @@
     addRowLabel: 'Add a pattern',
     errors: settings.getErrors('logFiles'),
     disabled: configOverrides.logFiles is defined,
-    warning: configOverrides.logFiles is defined ? configWarning('logFiles'),
+    warning: configOverrides.logFiles is defined ? configWarning(),
 }) }}
 
 {{ forms.autosuggestField({
@@ -158,7 +158,7 @@
     size: 5,
     errors: settings.getErrors('maxLogFiles'),
     disabled: configOverrides.maxLogFiles is defined,
-    warning: configOverrides.maxLogFiles is defined ? configWarning('maxLogFiles'),
+    warning: configOverrides.maxLogFiles is defined ? configWarning(),
 }) }}
 
 {{ forms.autosuggestField({
@@ -170,7 +170,7 @@
     size: 10,
     errors: settings.getErrors('maxLogFileSize'),
     disabled: configOverrides.maxLogFileSize is defined,
-    warning: configOverrides.maxLogFileSize is defined ? configWarning('maxLogFileSize'),
+    warning: configOverrides.maxLogFileSize is defined ? configWarning(),
 }) }}
 
 {{ forms.autosuggestField({
@@ -182,5 +182,5 @@
     size: 10,
     errors: settings.getErrors('maxTotalLogSize'),
     disabled: configOverrides.maxTotalLogSize is defined,
-    warning: configOverrides.maxTotalLogSize is defined ? configWarning('maxTotalLogSize'),
+    warning: configOverrides.maxTotalLogSize is defined ? configWarning(),
 }) }}
