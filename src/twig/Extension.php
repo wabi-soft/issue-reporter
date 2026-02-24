@@ -94,8 +94,12 @@ class Extension extends AbstractExtension
 
         if (App::parseBooleanEnv($settings->includeCraftContext) ?? true) {
             $context = IssueReporter::getInstance()->contextCollector->collect($template);
-            if (!empty($context)) {
-                $initConfig['craftContext'] = $context;
+            if (!empty($context) && is_array($context)) {
+                // Ensure each sub-key is an array/object, never a scalar
+                $sanitized = array_filter($context, fn($v) => is_array($v));
+                if (!empty($sanitized)) {
+                    $initConfig['craftContext'] = $sanitized;
+                }
             }
         }
 

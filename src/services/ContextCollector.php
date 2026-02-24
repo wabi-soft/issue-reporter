@@ -13,13 +13,19 @@ class ContextCollector extends Component
         $context = [];
 
         try {
-            $context['environment'] = $this->collectEnvironment();
+            $env = $this->collectEnvironment();
+            if (is_array($env) && !empty($env)) {
+                $context['environment'] = $env;
+            }
         } catch (\Throwable $e) {
             Craft::warning("Failed to collect environment context: {$e->getMessage()}", __METHOD__);
         }
 
         try {
-            $context['request'] = $this->collectRequest($template);
+            $req = $this->collectRequest($template);
+            if (is_array($req) && !empty($req)) {
+                $context['request'] = $req;
+            }
         } catch (\Throwable $e) {
             Craft::warning("Failed to collect request context: {$e->getMessage()}", __METHOD__);
         }
@@ -48,6 +54,11 @@ class ContextCollector extends Component
     private function collectRequest(?string $template): array
     {
         $request = Craft::$app->getRequest();
+
+        if (!$request->getIsSiteRequest()) {
+            return [];
+        }
+
         $site = Craft::$app->getSites()->getCurrentSite();
 
         $url = $request->getAbsoluteUrl();
