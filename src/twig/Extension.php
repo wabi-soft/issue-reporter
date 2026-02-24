@@ -92,7 +92,7 @@ class Extension extends AbstractExtension
 
         $initConfig = ['token' => $token];
 
-        if ($settings->includeCraftContext) {
+        if (App::parseBooleanEnv($settings->includeCraftContext) ?? true) {
             $context = IssueReporter::getInstance()->contextCollector->collect($template);
             if (!empty($context)) {
                 $initConfig['craftContext'] = $context;
@@ -106,9 +106,12 @@ class Extension extends AbstractExtension
             }
         }
 
+        $primaryColor = App::parseEnv($settings->primaryColor);
+        $primaryHoverColor = App::parseEnv($settings->primaryHoverColor);
+
         $theme = array_filter([
-            'primary' => $settings->primaryColor ? '#' . ltrim($settings->primaryColor, '#') : null,
-            'primaryHover' => $settings->primaryHoverColor ? '#' . ltrim($settings->primaryHoverColor, '#') : null,
+            'primary' => $primaryColor && !str_starts_with($primaryColor, '$') ? '#' . ltrim($primaryColor, '#') : null,
+            'primaryHover' => $primaryHoverColor && !str_starts_with($primaryHoverColor, '$') ? '#' . ltrim($primaryHoverColor, '#') : null,
         ]);
         if (!empty($theme)) {
             $initConfig['theme'] = $theme;

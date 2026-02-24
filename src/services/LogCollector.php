@@ -4,6 +4,7 @@ namespace wabisoft\craftissuereporter\services;
 
 use Craft;
 use craft\base\Component;
+use craft\helpers\App;
 use wabisoft\craftissuereporter\IssueReporter;
 use yii\base\Exception;
 
@@ -49,14 +50,21 @@ class LogCollector extends Component
         $cutoff = time() - 172800;
         $paths = array_filter($paths, fn($p) => filemtime($p) >= $cutoff);
         usort($paths, fn($a, $b) => filemtime($b) - filemtime($a));
-        $paths = array_slice($paths, 0, $settings->maxLogFiles);
+        $maxLogFiles = (int) App::parseEnv($settings->maxLogFiles) ?: 5;
+        $paths = array_slice($paths, 0, $maxLogFiles);
 
-        $perFileCap = (int) floor($settings->maxTotalLogSize / count($paths));
+        if (empty($paths)) {
+            return [];
+        }
+
+        $maxTotalLogSize = (int) App::parseEnv($settings->maxTotalLogSize) ?: 10000;
+        $perFileCap = (int) floor($maxTotalLogSize / count($paths));
         $results = [];
 
         foreach ($paths as $path) {
             try {
-                $content = $this->readTail($path, $settings->maxLogFileSize * 1024);
+                $maxFileSize = (int) App::parseEnv($settings->maxLogFileSize) ?: 32;
+                $content = $this->readTail($path, $maxFileSize * 1024);
                 $content = $this->filterSeverity($content);
                 $content = $this->redact($content);
                 $content = $this->truncate($content, $perFileCap);
