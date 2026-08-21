@@ -52,6 +52,10 @@ class Extension extends AbstractExtension
             return '';
         }
 
+        if (!IssueReporter::getInstance()->audienceGate->allowsInjection()) {
+            return '';
+        }
+
         $settings = IssueReporter::getInstance()->getSettings();
 
         $hostUrl = rtrim(App::parseEnv($settings->hostUrl), '/');
@@ -74,18 +78,24 @@ class Extension extends AbstractExtension
         $initUrl = UrlHelper::actionUrl('issue-reporter/widget/init', $params);
 
         return <<<HTML
-        <script src="{$hostUrl}/widget/widget.js?v={$cacheBust}" defer></script>
         <script>
           (function() {
+            function loadWidget(config) {
+              var s = document.createElement('script');
+              s.src = '{$hostUrl}/widget/widget.js?v={$cacheBust}';
+              s.onload = function() {
+                if (typeof IssueRelay !== 'undefined') IssueRelay.init(config);
+              };
+              document.head.appendChild(s);
+            }
             function initWidget() {
-              if (typeof IssueRelay === 'undefined') return;
               fetch('{$initUrl}', {
                 credentials: 'same-origin',
                 headers: {'Accept': 'application/json'}
               })
               .then(function(r) { return r.status === 200 ? r.json() : null; })
               .then(function(config) {
-                if (config) IssueRelay.init(config);
+                if (config) loadWidget(config);
               })
               .catch(function() {});
             }

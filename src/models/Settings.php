@@ -7,11 +7,22 @@ use craft\behaviors\EnvAttributeParserBehavior;
 
 class Settings extends Model
 {
+    public const AUDIENCE_CP_ACCESS = 'cpAccess';
+    public const AUDIENCE_ALWAYS = 'always';
+    public const AUDIENCE_NEVER = 'never';
+
+    public const AUDIENCES = [
+        self::AUDIENCE_CP_ACCESS,
+        self::AUDIENCE_ALWAYS,
+        self::AUDIENCE_NEVER,
+    ];
+
     public string $hostUrl = 'https://issuerelay.com';
     public string $projectUuid = '';
     public string $apiSecret = '';
     public int|string $tokenTtl = 3600;
     public bool|string $autoInject = true;
+    public string $injectFor = self::AUDIENCE_CP_ACCESS;
     public bool|string $includeCraftContext = true;
     public array $allowedUserGroups = [];
     public array $logFiles = [['pattern' => 'web.log']];
@@ -23,7 +34,7 @@ class Settings extends Model
 
     public function __construct($config = [])
     {
-        foreach (['autoInject', 'includeCraftContext', 'tokenTtl', 'maxLogFiles', 'maxLogFileSize', 'maxTotalLogSize'] as $attr) {
+        foreach (['autoInject', 'injectFor', 'includeCraftContext', 'tokenTtl', 'maxLogFiles', 'maxLogFileSize', 'maxTotalLogSize'] as $attr) {
             if (($config[$attr] ?? null) === '') {
                 unset($config[$attr]);
             }
@@ -43,6 +54,7 @@ class Settings extends Model
                     'apiSecret',
                     'tokenTtl',
                     'autoInject',
+                    'injectFor',
                     'includeCraftContext',
                     'maxLogFiles',
                     'maxLogFileSize',
@@ -60,6 +72,7 @@ class Settings extends Model
             [['hostUrl', 'projectUuid', 'apiSecret'], 'required'],
             ['hostUrl', 'url', 'defaultScheme' => 'https'],
             ['hostUrl', 'match', 'pattern' => '/^https:\/\//i', 'message' => 'Host URL must use HTTPS.'],
+            ['injectFor', 'in', 'range' => self::AUDIENCES, 'skipOnEmpty' => false],
             ['tokenTtl', 'integer', 'min' => 300, 'max' => 86400],
             ['maxLogFiles', 'integer', 'min' => 1, 'max' => 10],
             ['maxLogFileSize', 'integer', 'min' => 8, 'max' => 64],

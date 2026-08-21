@@ -55,9 +55,25 @@
 
 <h2>Widget Settings</h2>
 
+{{ forms.selectField({
+    label: 'Show Widget To',
+    instructions: 'Who gets the widget. `CP access` keeps it off public pages entirely, so anonymous visitors get no script, no request, and no cookie.',
+    id: 'injectFor',
+    name: 'injectFor',
+    value: settings.injectFor,
+    options: [
+        { label: 'Users with CP access', value: 'cpAccess' },
+        { label: 'Everyone', value: 'always' },
+        { label: 'Nobody (disabled)', value: 'never' },
+    ],
+    errors: settings.getErrors('injectFor'),
+    disabled: configOverrides.injectFor is defined,
+    warning: configOverrides.injectFor is defined ? configWarning(),
+}) }}
+
 {{ forms.booleanMenuField({
     label: 'Auto-inject Widget',
-    instructions: 'Automatically add the widget to all front-end pages for logged-in CP users. When off, use `{{ issueRelayWidget() }}` in your templates.',
+    instructions: 'Add the widget to front-end pages automatically. When off, place `{{ issueRelayWidget() }}` in your templates instead. Show Widget To still decides who sees it.',
     name: 'autoInject',
     includeEnvVars: true,
     value: settings.autoInject,
