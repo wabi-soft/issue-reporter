@@ -5,10 +5,11 @@ namespace wabisoft\craftissuereporter;
 use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
-use craft\helpers\App;
 use craft\events\TemplateEvent;
+use craft\helpers\App;
 use craft\web\View;
 use wabisoft\craftissuereporter\models\Settings;
+use wabisoft\craftissuereporter\services\AudienceGate;
 use wabisoft\craftissuereporter\services\ContextCollector;
 use wabisoft\craftissuereporter\services\LogCollector;
 use wabisoft\craftissuereporter\services\TokenService;
@@ -18,6 +19,7 @@ use yii\base\Event;
 /**
  * @method static IssueReporter getInstance()
  * @method Settings getSettings()
+ * @property-read AudienceGate $audienceGate
  * @property-read ContextCollector $contextCollector
  * @property-read LogCollector $logCollector
  * @property-read TokenService $tokenService
@@ -31,6 +33,7 @@ class IssueReporter extends Plugin
     {
         return [
             'components' => [
+                'audienceGate' => AudienceGate::class,
                 'contextCollector' => ContextCollector::class,
                 'logCollector' => LogCollector::class,
                 'tokenService' => TokenService::class,
