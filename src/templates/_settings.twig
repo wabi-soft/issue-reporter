@@ -57,7 +57,7 @@
 
 {{ forms.selectField({
     label: 'Show Widget To',
-    instructions: 'Who the widget is rendered for. `CP access` keeps it off public pages entirely: anonymous visitors receive no script, no request, and no cookie. `Everyone` renders the loader publicly, but the widget still only initializes for users the plugin authorizes.',
+    instructions: 'Who gets the widget. `CP access` keeps it off public pages entirely, so anonymous visitors get no script, no request, and no cookie.',
     id: 'injectFor',
     name: 'injectFor',
     value: settings.injectFor,
@@ -73,7 +73,7 @@
 
 {{ forms.booleanMenuField({
     label: 'Auto-inject Widget',
-    instructions: 'Add the widget to front-end pages automatically. When off, place `{{ issueRelayWidget() }}` in your templates instead. Either way, Show Widget To decides who sees it.',
+    instructions: 'Add the widget to front-end pages automatically. When off, place `{{ issueRelayWidget() }}` in your templates instead. Show Widget To still decides who sees it.',
     name: 'autoInject',
     includeEnvVars: true,
     value: settings.autoInject,

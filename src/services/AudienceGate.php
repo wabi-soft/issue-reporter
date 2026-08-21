@@ -15,8 +15,8 @@ class AudienceGate extends Component
     /**
      * Whether the current request should receive the widget loader markup.
      *
-     * Returns false without touching the session or user components when the
-     * request carries no auth cookie, so anonymous page views stay cacheable.
+     * Bails on the cookie check before resolving an identity, so an anonymous
+     * request never starts a session and never gets a Set-Cookie back.
      */
     public function allowsInjection(): bool
     {
@@ -40,8 +40,8 @@ class AudienceGate extends Component
     /**
      * Whether this user may receive widget config.
      *
-     * Deliberately ignores injectFor: the injection audience decides who gets
-     * markup, never who gets a token.
+     * Ignores injectFor: the injection audience decides who gets markup, never
+     * who gets a token.
      */
     public function authorizes(?User $user): bool
     {
