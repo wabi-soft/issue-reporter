@@ -4,6 +4,11 @@
 All notable changes to this project will be documented in this file.
 <!--- END HEADER -->
 
+## [0.2.8](https://github.com/wabi-soft/issue-reporter/compare/v0.2.7...v0.2.8) (2026-08-21)
+
+
+---
+
 ## [0.2.7](https://github.com/wabi-soft/issue-reporter/compare/v0.2.6...v0.2.7) (2026-02-24)
 
 
