@@ -52,6 +52,10 @@ class Extension extends AbstractExtension
             return '';
         }
 
+        if (!IssueReporter::getInstance()->audienceGate->allowsInjection()) {
+            return '';
+        }
+
         $settings = IssueReporter::getInstance()->getSettings();
 
         $hostUrl = rtrim(App::parseEnv($settings->hostUrl), '/');

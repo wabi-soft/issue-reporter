@@ -17,35 +17,15 @@ class WidgetController extends Controller
         $this->requireAcceptsJson();
 
         $user = Craft::$app->getUser()->getIdentity();
-        if (!$user || !$user->can('accessCp')) {
+
+        // authorizes(), not allowsInjection(): injectFor must never widen who gets a token.
+        if (!IssueReporter::getInstance()->audienceGate->authorizes($user)) {
             $this->response->setStatusCode(204);
             $this->response->headers->set('Cache-Control', 'no-store, private');
             return $this->response;
         }
 
         $settings = IssueReporter::getInstance()->getSettings();
-
-        if (!empty($settings->allowedUserGroups)) {
-            $allowAdmins = in_array('__admins__', $settings->allowedUserGroups, true);
-            $groupUids = array_filter($settings->allowedUserGroups, fn($v) => $v !== '__admins__');
-
-            $allowed = $allowAdmins && $user->admin;
-
-            if (!$allowed && !empty($groupUids)) {
-                $userGroupUids = array_map(fn($g) => $g->uid, $user->getGroups());
-                $validGroupUids = array_filter(
-                    $groupUids,
-                    fn($uid) => Craft::$app->getUserGroups()->getGroupByUid($uid) !== null
-                );
-                $allowed = !empty(array_intersect($validGroupUids, $userGroupUids));
-            }
-
-            if (!$allowed) {
-                $this->response->setStatusCode(204);
-                $this->response->headers->set('Cache-Control', 'no-store, private');
-                return $this->response;
-            }
-        }
 
         $token = IssueReporter::getInstance()->tokenService->generateToken($user->email);
         if (empty($token)) {
